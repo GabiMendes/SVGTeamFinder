@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todos os Times</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Todos os Times</h1>
+        <ul class="list-group">
+            {% for time in times %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ time.nome_popular }}
+                <a href="/times/{{ time.time_id }}" class="btn btn-info btn-sm">Detalhes</a>
+            </li>
+            {% endfor %}
+        </ul>
+        <div class="text-center mt-3">
+            <button class="btn btn-primary" onclick="window.location.href='/'">Voltar</button>
+        </div>
+    </div>
+</body>
+</html>

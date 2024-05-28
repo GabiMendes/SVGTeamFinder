@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Específico</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        {% if error %}
+        <p class="alert alert-danger">{{ error }}</p>
+        {% else %}
+        <h1 class="text-center">{{ time.nome_popular }}</h1>
+        <div class="text-center">
+            <img src="{{ time.escudo }}" alt="Escudo do {{ time.nome_popular }}" class="img-thumbnail" style="width: 150px; height: auto;">
+        </div>
+        <ul class="list-group mt-3">
+            <li class="list-group-item"><strong>Nome:</strong> {{ time.nome }}</li>
+            <li class="list-group-item"><strong>Sigla:</strong> {{ time.sigla }}</li>
+            <li class="list-group-item"><strong>Apelido:</strong> {{ time.apelido }}</li>
+        </ul>
+        <div class="text-center mt-3">
+            <button class="btn btn-primary" onclick="window.location.href='/'">Voltar</button>
+            <button class="btn btn-success" id="downloadButton">Baixar escudo</button>
+        </div>
+        {% endif %}
+    </div>
+
+    <div id="confirmModal" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Baixar escudo?</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="confirmDownloadButton">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var downloadButton = document.getElementById("downloadButton");
+            var confirmDownloadButton = document.getElementById("confirmDownloadButton");
+
+            downloadButton.addEventListener("click", function() {
+                var modal = document.getElementById("confirmModal");
+                modal.style.display = "block";
+            });
+
+            confirmDownloadButton.addEventListener("click", function() {
+                var escudoUrl = "{{ time.escudo }}";
+                window.location.href = escudoUrl;
+            });
+
+            var closeButtons = document.querySelectorAll('[data-dismiss="modal"]');
+            closeButtons.forEach(function(button) {
+                button.addEventListener("click", function() {
+                    var modal = document.getElementById("confirmModal");
+                    modal.style.display = "none";
+                });
+            });
+
+            window.addEventListener("click", function(event) {
+                var modal = document.getElementById("confirmModal");
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
