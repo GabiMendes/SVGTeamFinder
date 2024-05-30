@@ -15,10 +15,16 @@
             <button class="btn btn-secondary btn-lg" onclick="showTimeForm()">Specific team</button>
         </div>
         <div id="timeForm" style="display:none;" class="mt-3">
-            <form action="/times/time" method="GET">
-                <div class="form-group">
+            <button class="btn btn-info" onclick="showIdInput()">ID</button>
+            <button class="btn btn-info" onclick="showNameInput()">Name</button>
+            <form id="searchForm" action="/times/time" method="GET" style="display:none;">
+                <div class="form-group" id="idInput" style="display:none;">
                     <label for="timeId">Enter the team ID:</label>
-                    <input type="number" id="timeId" name="time_id" class="form-control" required>
+                    <input type="number" id="timeId" name="time_id" class="form-control">
+                </div>
+                <div class="form-group" id="nameInput" style="display:none;">
+                    <label for="teamName">Enter the team name:</label>
+                    <input type="text" id="teamName" name="team_name" class="form-control">
                 </div>
                 <input type="submit" value="Buscar" class="btn btn-success">
             </form>
@@ -26,8 +32,32 @@
     </div>
 
     <script>
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var timeId = document.getElementById('timeId').value;
+            var teamName = document.getElementById('teamName').value;
+
+            if (timeId) {
+                window.location.href = '/times/time?time_id=' + timeId;
+            } else if (teamName) {
+                window.location.href = '/times/team_name?team_name=' + teamName;
+            }
+        });
+
         function showTimeForm() {
             document.getElementById('timeForm').style.display = 'block';
+        }
+
+        function showIdInput() {
+            document.getElementById('searchForm').style.display = 'block';
+            document.getElementById('idInput').style.display = 'block';
+            document.getElementById('nameInput').style.display = 'none';
+        }
+
+        function showNameInput() {
+            document.getElementById('searchForm').style.display = 'block';
+            document.getElementById('nameInput').style.display = 'block';
+            document.getElementById('idInput').style.display = 'none';
         }
     </script>
 </body>
