@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for
 from concurrent.futures import ThreadPoolExecutor
 import requests
+import concurrent.futures
 
 app = Flask(__name__)
 
@@ -8,15 +9,19 @@ API_KEY = 'test_66e02a7647ab45ca54f819fab08840'
 BASE_URL = 'https://api.api-futebol.com.br/v1/'
 
 def get_team_data(time_id):
-    url = BASE_URL + f'times/{time_id}'
-    headers = {'Authorization': f'Bearer {API_KEY}'}
+    try:
+        url = BASE_URL + f'times/{time_id}'
+        headers = {'Authorization': f'Bearer {API_KEY}'}
 
-    response = requests.get(url, headers=headers)
-    data = response.json()
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
 
-    return data
+        data = response.json()
 
-import concurrent.futures
+        return data
+    except Exception as e:
+        print(f"An error occurred while getting data for team {time_id}: {e}")
+        return None
 
 def get_all_teams_data():
     all_teams_data = []
@@ -24,8 +29,12 @@ def get_all_teams_data():
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
         future_to_time_id = {executor.submit(get_team_data, time_id): time_id for time_id in range(100)}
         for future in concurrent.futures.as_completed(future_to_time_id):
-            data = future.result()
-            all_teams_data.append(data)
+            try:
+                data = future.result()
+                if data is not None:
+                    all_teams_data.append(data)
+            except Exception as e:
+                print(f"An error occurred while getting result from future: {e}")
 
     return all_teams_data
 
@@ -77,6 +86,25 @@ def redirect_to_escudo(id_time):
 def search_time_by_id():
     time_id = request.args.get('time_id', type=int)
     return redirect(url_for('get_time_by_id', id_time=time_id))
+
+def get_team_data_by_name(team_name):
+    all_teams_data = get_all_teams_data()
+
+    for team_data in all_teams_data:
+        if team_data['nome'] == team_name:
+            return team_data
+
+    return None
+
+@app.route('/times/team_name', methods=['GET'])
+def search_team_by_name():
+    team_name = request.args.get('team_name', type=str)
+    team_data = get_team_data_by_name(team_name)
+
+    if team_data is not None:
+        return redirect(url_for('get_time_by_id', id_time=team_data['time_id']))
+
+    return jsonify({'error': 'Team not found'}), 404
 
 if __name__ == '__main__':
     app.run(debug=True)
