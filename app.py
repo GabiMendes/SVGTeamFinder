@@ -1,4 +1,5 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for
+from concurrent.futures import ThreadPoolExecutor
 import requests
 
 app = Flask(__name__)
@@ -6,17 +7,25 @@ app = Flask(__name__)
 API_KEY = 'test_66e02a7647ab45ca54f819fab08840'
 BASE_URL = 'https://api.api-futebol.com.br/v1/'
 
+def get_team_data(time_id):
+    url = BASE_URL + f'times/{time_id}'
+    headers = {'Authorization': f'Bearer {API_KEY}'}
+
+    response = requests.get(url, headers=headers)
+    data = response.json()
+
+    return data
+
+import concurrent.futures
+
 def get_all_teams_data():
     all_teams_data = []
 
-    for time_id in range(10):
-        url = BASE_URL + f'times/{time_id}'
-        headers = {'Authorization': f'Bearer {API_KEY}'}
-
-        response = requests.get(url, headers=headers)
-        data = response.json()
-
-        all_teams_data.append(data)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        future_to_time_id = {executor.submit(get_team_data, time_id): time_id for time_id in range(100)}
+        for future in concurrent.futures.as_completed(future_to_time_id):
+            data = future.result()
+            all_teams_data.append(data)
 
     return all_teams_data
 
