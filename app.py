@@ -2,10 +2,14 @@ from flask import Flask, render_template, jsonify, request, redirect, url_for
 from concurrent.futures import ThreadPoolExecutor
 import requests
 import concurrent.futures
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
-API_KEY = 'test_66e02a7647ab45ca54f819fab08840'
+API_KEY = os.getenv('API_KEY')
 BASE_URL = 'https://api.api-futebol.com.br/v1/'
 
 def get_team_data(time_id):
