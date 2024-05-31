@@ -1,8 +1,6 @@
-/* Adicione estas linhas no final do seu arquivo CSS */
 
-/* Estilo para o modal Bootstrap */
 .modal {
-    display: none; /* Oculta o modal por padrão */
+    display: none;
     position: fixed;
     z-index: 9999;
     left: 0;
