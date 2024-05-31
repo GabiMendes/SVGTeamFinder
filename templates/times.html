@@ -8,8 +8,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <div class="container">
-        <h1 class="text-center">All teams</h1>
+    <div class="container center-screen">
+        <div class="jumbotron text-center bg-white border border-light">
+            <h1 class="display-4">All Teams</h1>
+        </div>
         <ul class="list-group">
             {% for time in times %}
             <li class="list-group-item d-flex justify-content-between align-items-center">

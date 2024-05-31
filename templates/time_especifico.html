@@ -12,15 +12,20 @@
         {% if error %}
         <p class="alert alert-danger">{{ error }}</p>
         {% else %}
-        <h1 class="text-center">{{ time.nome_popular }}</h1>
+        <div class="container center-screen">
+            <div class="jumbotron text-center bg-white border border-light">
+                <h1 class="display-4">{{ time.nome_popular }}</h1>
+            </div>
         <div class="text-center">
-            <img src="{{ time.escudo }}" alt="Escudo do {{ time.nome_popular }}" class="img-thumbnail" style="width: 150px; height: auto;">
+            <img src="{{ time.escudo }}" alt="Escudo do {{ time.nome_popular }}" class="img-thumbnail" style="width: 250px; height: auto;">
         </div>
+        <br><br><br><br>
         <ul class="list-group mt-3">
             <li class="list-group-item"><strong>Name:</strong> {{ time.nome }}</li>
             <li class="list-group-item"><strong>Abbreviation:</strong> {{ time.sigla }}</li>
             <li class="list-group-item"><strong>Nickname:</strong> {{ time.apelido }}</li>
         </ul>
+        <br><br>
         <div class="text-center mt-3">
             <button class="btn btn-primary" onclick="window.location.href='/'">Back</button>
             <button class="btn btn-success" id="downloadButton">Download emblem</button>
