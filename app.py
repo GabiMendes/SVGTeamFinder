@@ -58,7 +58,7 @@ def get_all_teams():
 def get_time_by_id(id_time):
     team_data = team_data_api.get_team_data(id_time)
     if 'erro' in team_data:
-        return render_template('time_especifico.html', error='Team not found')
+        return render_template('not_found.html')
     return render_template('time_especifico.html', time=team_data)
 
 @app.route('/times/escudo/<int:id_time>', methods=['GET'])
@@ -70,7 +70,7 @@ def get_escudo(id_time):
             escudo_url = team_data['escudo']
             return jsonify({'escudo_url': escudo_url})
 
-    return jsonify({'error': 'Team not found'}), 404
+    return render_template('not_found.html')
 
 @app.route('/times/escudo/imagem/<int:id_time>', methods=['GET'])
 def redirect_to_escudo(id_time):
@@ -81,7 +81,7 @@ def redirect_to_escudo(id_time):
             escudo_url = team_data['escudo']
             return redirect(escudo_url)
 
-    return jsonify({'error': 'Team not found'}), 404
+    return render_template('not_found.html')
 
 @app.route('/times/time', methods=['GET'])
 def search_time_by_id():
@@ -97,7 +97,7 @@ def search_team_by_name():
         if team_data['nome'] == team_name:
             return redirect(url_for('get_time_by_id', id_time=team_data['time_id']))
 
-    return jsonify({'error': 'Team not found'}), 404
+    return render_template('not_found.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
