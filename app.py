@@ -29,19 +29,19 @@ class TeamDataAPI(API):
         return self.get_data(f'times/{time_id}')
 
     def get_all_teams_data(self):
-        all_teams_data = []
-
+        all_teams_data = {}
+    
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-            future_to_time_id = {executor.submit(self.get_team_data, time_id): time_id for time_id in range(100)}
+            future_to_time_id = {executor.submit(self.get_team_data, time_id): time_id for time_id in range(5)}
             for future in concurrent.futures.as_completed(future_to_time_id):
                 try:
                     data = future.result()
                     if data is not None:
-                        all_teams_data.append(data)
+                        all_teams_data[data['time_id']] = data
                 except Exception as e:
                     print(f"An error occurred while getting result from future: {e}")
-
-        return all_teams_data
+    
+        return list(all_teams_data.values())
 
 team_data_api = TeamDataAPI()
 
