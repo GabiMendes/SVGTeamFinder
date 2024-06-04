@@ -2,12 +2,14 @@
 import concurrent.futures
 import logging
 import os
-import unicodedata
 
 # Third party imports
 from dotenv import load_dotenv
 from flask import Flask, render_template, jsonify, request, redirect, url_for
 import requests
+
+# Local application imports
+from utilities import remove_accents  # Assuming you moved remove_accents to utilities.py
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -112,7 +114,7 @@ def get_all_teams():
     all_teams_data = team_data_api.get_all_teams_data()
     return render_template('times.html', times=all_teams_data)
 
-@app.route('/times/<int:id_time>', methods=['GET'])
+@app.route('/times/<int:id_time>')
 def get_time_by_id(id_time):
     """
     Render a page with data for a specific team.
@@ -125,7 +127,7 @@ def get_time_by_id(id_time):
         return render_template('not_found.html')
     return render_template('time_especifico.html', time=team_data)
 
-@app.route('/times/escudo/<int:id_time>', methods=['GET'])
+@app.route('/times/escudo/<int:id_time>')
 def get_escudo(id_time):
     """
     Get the URL of the shield for a specific team.
@@ -141,7 +143,7 @@ def get_escudo(id_time):
         return render_template('not_found.html')
     return jsonify({'escudo_url': team_data['escudo']})
 
-@app.route('/times/escudo/imagem/<int:id_time>', methods=['GET'])
+@app.route('/times/escudo/imagem/<int:id_time>')
 def redirect_to_escudo(id_time):
     """
     Redirect to the URL of the shield for a specific team.
@@ -154,21 +156,7 @@ def redirect_to_escudo(id_time):
         return render_template('not_found.html')
     return redirect(team_data['escudo'])
 
-def remove_accents(input_str):
-    """
-    Remove accents from a string.
-
-    Args:
-        input_str (str): The string to remove accents from.
-
-    Returns:
-        str: The string with accents removed.
-    """
-    nfkd_form = unicodedata.normalize('NFKD', input_str)
-    only_ascii = nfkd_form.encode('ASCII', 'ignore')
-    return only_ascii.decode()
-
-@app.route('/times/team_name', methods=['GET'])
+@app.route('/times/team_name')
 def search_team_by_name():
     """Search for a team by name and render a page with the team's data."""
     team_name_or_sigla = remove_accents(request.args.get('team_name', type=str).lower())
