@@ -1,6 +1,6 @@
 # Standard library imports
-from concurrent.futures import ThreadPoolExecutor
 import concurrent.futures
+import logging
 import os
 import unicodedata
 
@@ -8,6 +8,10 @@ import unicodedata
 from dotenv import load_dotenv
 from flask import Flask, render_template, jsonify, request, redirect, url_for
 import requests
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -71,8 +75,8 @@ class TeamDataAPI(API):
                     if data is not None:
                         all_teams_data[data['time_id']] = data
                 except Exception as e:
-                    print(f"An error occurred while getting result from future: {e}")
-    
+                    logger.error(f"An error occurred while getting result from future: {e}")
+
         return list(all_teams_data.values())
 
 team_data_api = TeamDataAPI()
