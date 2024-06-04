@@ -5,7 +5,7 @@ import os
 
 # Third party imports
 from dotenv import load_dotenv
-from flask import Flask, render_template, jsonify, request, redirect, url_for
+from flask import Flask, render_template, jsonify, request, redirect
 import requests
 
 # Local application imports
