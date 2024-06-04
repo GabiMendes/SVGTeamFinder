@@ -3,6 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 import requests
 import concurrent.futures
 import os
+import unicodedata
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -83,19 +84,19 @@ def redirect_to_escudo(id_time):
 
     return render_template('not_found.html')
 
-@app.route('/times/time', methods=['GET'])
-def search_time_by_id():
-    time_id = request.args.get('time_id', type=int)
-    return redirect(url_for('get_time_by_id', id_time=time_id))
+def remove_accents(input_str):
+    nfkd_form = unicodedata.normalize('NFKD', input_str)
+    only_ascii = nfkd_form.encode('ASCII', 'ignore')
+    return only_ascii.decode()
 
 @app.route('/times/team_name', methods=['GET'])
 def search_team_by_name():
-    team_name = request.args.get('team_name', type=str)
+    team_name_or_sigla = remove_accents(request.args.get('team_name', type=str).lower())
     all_teams_data = team_data_api.get_all_teams_data()
 
     for team_data in all_teams_data:
-        if team_data['nome'] == team_name:
-            return redirect(url_for('get_time_by_id', id_time=team_data['time_id']))
+        if team_name_or_sigla in remove_accents(team_data['nome'].lower()) or team_name_or_sigla in remove_accents(team_data['sigla'].lower()):
+            return render_template('time_especifico.html', time=team_data)
 
     return render_template('not_found.html')
 
