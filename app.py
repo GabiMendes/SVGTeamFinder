@@ -17,7 +17,18 @@ API_KEY = os.getenv('API_KEY')
 BASE_URL = 'https://api.api-futebol.com.br/v1/'
 
 class API:
+    """A class to interact with the API."""
+
     def get_data(self, endpoint):
+        """
+        Fetch data from the API for a given endpoint.
+
+        Args:
+            endpoint (str): The endpoint of the API to fetch data from.
+
+        Returns:
+            dict: The data returned from the API.
+        """
         url = BASE_URL + endpoint
         headers = {'Authorization': f'Bearer {API_KEY}'}
 
@@ -29,10 +40,27 @@ class API:
         return data
 
 class TeamDataAPI(API):
+    """A class to fetch team data from the API."""
+
     def get_team_data(self, time_id):
+        """
+        Fetch data for a specific team.
+
+        Args:
+            time_id (int): The ID of the team to fetch data for.
+
+        Returns:
+            dict: The data for the team.
+        """
         return self.get_data(f'times/{time_id}')
 
     def get_all_teams_data(self):
+        """
+        Fetch data for all teams.
+
+        Returns:
+            list: A list of data for all teams.
+        """
         all_teams_data = {}
     
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
@@ -51,15 +79,23 @@ team_data_api = TeamDataAPI()
 
 @app.route('/')
 def index():
+    """Render the index page."""
     return render_template('index.html')
 
 @app.route('/times/all')
 def get_all_teams():
+    """Render a page with data for all teams."""
     all_teams_data = team_data_api.get_all_teams_data()
     return render_template('times.html', times=all_teams_data)
 
 @app.route('/times/<int:id_time>', methods=['GET'])
 def get_time_by_id(id_time):
+    """
+    Render a page with data for a specific team.
+
+    Args:
+        id_time (int): The ID of the team to fetch data for.
+    """
     team_data = team_data_api.get_team_data(id_time)
     if 'erro' in team_data:
         return render_template('not_found.html')
@@ -67,6 +103,15 @@ def get_time_by_id(id_time):
 
 @app.route('/times/escudo/<int:id_time>', methods=['GET'])
 def get_escudo(id_time):
+    """
+    Get the URL of the shield for a specific team.
+
+    Args:
+        id_time (int): The ID of the team to fetch the shield URL for.
+
+    Returns:
+        str: The URL of the team's shield.
+    """
     all_teams_data = team_data_api.get_all_teams_data()
 
     for team_data in all_teams_data:
@@ -78,6 +123,12 @@ def get_escudo(id_time):
 
 @app.route('/times/escudo/imagem/<int:id_time>', methods=['GET'])
 def redirect_to_escudo(id_time):
+    """
+    Redirect to the URL of the shield for a specific team.
+
+    Args:
+        id_time (int): The ID of the team to redirect to the shield URL for.
+    """
     all_teams_data = team_data_api.get_all_teams_data()
 
     for team_data in all_teams_data:
@@ -88,12 +139,22 @@ def redirect_to_escudo(id_time):
     return render_template('not_found.html')
 
 def remove_accents(input_str):
+    """
+    Remove accents from a string.
+
+    Args:
+        input_str (str): The string to remove accents from.
+
+    Returns:
+        str: The string with accents removed.
+    """
     nfkd_form = unicodedata.normalize('NFKD', input_str)
     only_ascii = nfkd_form.encode('ASCII', 'ignore')
     return only_ascii.decode()
 
 @app.route('/times/team_name', methods=['GET'])
 def search_team_by_name():
+    """Search for a team by name and render a page with the team's data."""
     team_name_or_sigla = remove_accents(request.args.get('team_name', type=str).lower())
     all_teams_data = team_data_api.get_all_teams_data()
 
