@@ -9,7 +9,7 @@ from flask import Flask, render_template, jsonify, request, redirect, url_for
 import requests
 
 # Local application imports
-from utilities import remove_accents  # Assuming you moved remove_accents to utilities.py
+from utilities import remove_accents
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
