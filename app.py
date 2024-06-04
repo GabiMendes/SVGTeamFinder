@@ -46,6 +46,8 @@ class API:
 class TeamDataAPI(API):
     """A class to fetch team data from the API."""
 
+    MAX_TEAMS = 5
+
     def get_team_data(self, time_id):
         """
         Fetch data for a specific team.
@@ -68,7 +70,7 @@ class TeamDataAPI(API):
         all_teams_data = {}
     
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-            future_to_time_id = {executor.submit(self.get_team_data, time_id): time_id for time_id in range(5)}
+            future_to_time_id = {executor.submit(self.get_team_data, time_id): time_id for time_id in range(self.MAX_TEAMS)}
             for future in concurrent.futures.as_completed(future_to_time_id):
                 try:
                     data = future.result()
@@ -78,6 +80,24 @@ class TeamDataAPI(API):
                     logger.error(f"An error occurred while getting result from future: {e}")
 
         return list(all_teams_data.values())
+
+    def get_team_by_id(self, id_time):
+        """
+        Fetch data for a specific team by id.
+
+        Args:
+            id_time (int): The ID of the team to fetch data for.
+
+        Returns:
+            dict: The data for the team.
+        """
+        all_teams_data = self.get_all_teams_data()
+
+        for team_data in all_teams_data:
+            if team_data['time_id'] == id_time:
+                return team_data
+
+        return None
 
 team_data_api = TeamDataAPI()
 
@@ -100,8 +120,8 @@ def get_time_by_id(id_time):
     Args:
         id_time (int): The ID of the team to fetch data for.
     """
-    team_data = team_data_api.get_team_data(id_time)
-    if 'erro' in team_data:
+    team_data = team_data_api.get_team_by_id(id_time)
+    if team_data is None:
         return render_template('not_found.html')
     return render_template('time_especifico.html', time=team_data)
 
@@ -116,14 +136,10 @@ def get_escudo(id_time):
     Returns:
         str: The URL of the team's shield.
     """
-    all_teams_data = team_data_api.get_all_teams_data()
-
-    for team_data in all_teams_data:
-        if team_data['time_id'] == id_time:
-            escudo_url = team_data['escudo']
-            return jsonify({'escudo_url': escudo_url})
-
-    return render_template('not_found.html')
+    team_data = team_data_api.get_team_by_id(id_time)
+    if team_data is None:
+        return render_template('not_found.html')
+    return jsonify({'escudo_url': team_data['escudo']})
 
 @app.route('/times/escudo/imagem/<int:id_time>', methods=['GET'])
 def redirect_to_escudo(id_time):
@@ -133,14 +149,10 @@ def redirect_to_escudo(id_time):
     Args:
         id_time (int): The ID of the team to redirect to the shield URL for.
     """
-    all_teams_data = team_data_api.get_all_teams_data()
-
-    for team_data in all_teams_data:
-        if team_data['time_id'] == id_time:
-            escudo_url = team_data['escudo']
-            return redirect(escudo_url)
-
-    return render_template('not_found.html')
+    team_data = team_data_api.get_team_by_id(id_time)
+    if team_data is None:
+        return render_template('not_found.html')
+    return redirect(team_data['escudo'])
 
 def remove_accents(input_str):
     """
