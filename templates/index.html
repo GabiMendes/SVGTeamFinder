@@ -6,6 +6,7 @@
     <title>Index</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <style>
         .center {
             display: flex;
@@ -29,54 +30,24 @@
     </div>
     <div class="d-flex justify-content-center">
         <button class="btn btn-primary btn-lg mr-2" style="width: 200px; height: 60px;" onclick="window.location.href='/times/all'">All teams</button>
-        <button class="btn btn-secondary btn-lg" style="width: 200px; height: 60px;" onclick="showTimeForm()">Specific team</button>
-    </div>
-        <div id="timeForm" style="display:none;" class="mt-3">
-            <div class="center">
-                <button class="btn btn-info" onclick="showIdInput()">ID</button>
-                <button class="btn btn-info" onclick="showNameInput()">Name</button>
-            </div>
-            <form id="searchForm" action="/times/time" method="GET" style="display:none;">
-                <div class="form-group" id="idInput" style="display:none;">
-                    <label for="timeId">Enter the team ID:</label>
-                    <input type="number" id="timeId" name="time_id" class="form-control">
-                </div>
-                <div class="form-group" id="nameInput" style="display:none;">
-                    <label for="teamName">Enter the team name:</label>
-                    <input type="text" id="teamName" name="team_name" class="form-control">
-                </div>
-                <input type="submit" value="Buscar" class="btn btn-success">
-            </form>
-        </div>
+        <button class="btn btn-secondary btn-lg" style="width: 200px; height: 60px;" onclick="searchSpecificTeam()">Specific team</button>
     </div>
 
     <script>
-        document.getElementById('searchForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            var timeId = document.getElementById('timeId').value;
-            var teamName = document.getElementById('teamName').value;
-
-            if (timeId) {
-                window.location.href = '/times/time?time_id=' + timeId;
-            } else if (teamName) {
-                window.location.href = '/times/team_name?team_name=' + teamName;
-            }
-        });
-
-        function showTimeForm() {
-            document.getElementById('timeForm').style.display = 'block';
-        }
-
-        function showIdInput() {
-            document.getElementById('searchForm').style.display = 'block';
-            document.getElementById('idInput').style.display = 'block';
-            document.getElementById('nameInput').style.display = 'none';
-        }
-
-        function showNameInput() {
-            document.getElementById('searchForm').style.display = 'block';
-            document.getElementById('nameInput').style.display = 'block';
-            document.getElementById('idInput').style.display = 'none';
+        function searchSpecificTeam() {
+            swal({
+                title: "Specific team",
+                text: "Please enter the team name or sigla:",
+                content: "input",
+                button: {
+                    text: "Search",
+                    closeModal: false,
+                },
+            })
+            .then(name => {
+                if (!name) throw null;
+                window.location.href = '/times/team_name?team_name=' + name;
+            });
         }
     </script>
 </body>

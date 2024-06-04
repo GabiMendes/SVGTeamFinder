@@ -6,6 +6,13 @@
     <title>Time Específico</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <style>
+    .swal-button--confirm {
+        background-color: #007bff;
+    }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -33,49 +40,23 @@
         {% endif %}
     </div>
 
-    <div id="confirmModal" class="modal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Download emblem?</h5>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="confirmDownloadButton">Confirm</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var downloadButton = document.getElementById("downloadButton");
-            var confirmDownloadButton = document.getElementById("confirmDownloadButton");
 
             downloadButton.addEventListener("click", function() {
-                var modal = document.getElementById("confirmModal");
-                modal.style.display = "block";
-            });
-
-            confirmDownloadButton.addEventListener("click", function() {
                 var escudoUrl = "{{ time.escudo }}";
-                window.location.href = escudoUrl;
-            });
-
-            var closeButtons = document.querySelectorAll('[data-dismiss="modal"]');
-            closeButtons.forEach(function(button) {
-                button.addEventListener("click", function() {
-                    var modal = document.getElementById("confirmModal");
-                    modal.style.display = "none";
+                swal({
+                    title: "Download emblem?",
+                    icon: "success",
+                    buttons: true,
+                    dangerMode: true,
+                })
+                .then((willDownload) => {
+                    if (willDownload) {
+                        window.location.href = escudoUrl;
+                    }
                 });
-            });
-
-            window.addEventListener("click", function(event) {
-                var modal = document.getElementById("confirmModal");
-                if (event.target == modal) {
-                    modal.style.display = "none";
-                }
             });
         });
     </script>
