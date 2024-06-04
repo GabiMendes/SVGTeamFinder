@@ -1,10 +1,13 @@
-from flask import Flask, render_template, jsonify, request, redirect, url_for
+# Standard library imports
 from concurrent.futures import ThreadPoolExecutor
-import requests
 import concurrent.futures
 import os
 import unicodedata
+
+# Third party imports
 from dotenv import load_dotenv
+from flask import Flask, render_template, jsonify, request, redirect, url_for
+import requests
 
 load_dotenv()
 
